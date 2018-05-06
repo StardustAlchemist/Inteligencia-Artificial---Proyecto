@@ -13,8 +13,8 @@ public class Inicio
 	String texto = "";
 	String NombreArchivo = "";
 	
-	LecturaArchivo lector = new LecturaArchivo(); //Instancia de Lectura de Archivo.
-	GuardarPalabras guardar = new GuardarPalabras(); // Instancia para Guardar las palabras.
+	
+	Entrenamiento entrenar; // Instancia de la clase Entrenamiento
 	
 	/**
 	 * Launch the application.
@@ -75,9 +75,7 @@ public class Inicio
 				}
 				NombreArchivo = fc.getSelectedFile().getAbsolutePath();
 				
-				lector.LeerTexto(NombreArchivo); //Se lee y se almacena en una lista "list" el archivo seleccionado
-				guardar.DividirPalabras(lector.list); // Se dividen las palabras y etiquetan y se alamcenan en listas.
-				
+				entrenar = new Entrenamiento(NombreArchivo); // Se inicializa la clase entrenar.
 				
 				
 			
