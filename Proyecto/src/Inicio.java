@@ -12,6 +12,10 @@ public class Inicio
 	private JFrame frame;
 	String texto = "";
 	String NombreArchivo = "";
+	
+	LecturaArchivo lector = new LecturaArchivo(); //Instancia de Lectura de Archivo.
+	GuardarPalabras guardar = new GuardarPalabras(); // Instancia para Guardar las palabras.
+	
 	/**
 	 * Launch the application.
 	 */
@@ -58,6 +62,9 @@ public class Inicio
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				/**
+				 * Codigo para el JFileChooser
+				 */
 				JFileChooser fc = new JFileChooser();
 				//fc.setCurrentDirectory(new java.io.File("C:/Users/"));
 				fc.setDialogTitle("Carga de Archivo");
@@ -67,14 +74,18 @@ public class Inicio
 					
 				}
 				NombreArchivo = fc.getSelectedFile().getAbsolutePath();
-				LecturaArchivo lector = new LecturaArchivo();
-				texto = lector.LeerTexto(NombreArchivo);
 				
-				System.out.println(texto);
+				lector.LeerTexto(NombreArchivo); //Se lee y se almacena en una lista "list" el archivo seleccionado
+				guardar.DividirPalabras(lector.list); // Se dividen las palabras y etiquetan y se alamcenan en listas.
+				
+				
+				
+			
+				
 				
 			}
 		});
-		btnEntrenar.setBounds(169, 110, 89, 23);
+		btnEntrenar.setBounds(1+69, 110, 89, 23);
 		frame.getContentPane().add(btnEntrenar);
 	}
 }
