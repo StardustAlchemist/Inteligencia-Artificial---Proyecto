@@ -1,4 +1,6 @@
 import java.io.*;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +15,10 @@ public class Entrenamiento
 	 ArrayList<String> palabras = new ArrayList<String>(); // Se guardan palabras de cada oracion (No estan separadas)
 	 ArrayList<String> etiquetas = new ArrayList<String>(); // Se guardan etiquetas de cada oracion.
 	 ArrayList<String> listadoPalabras = new ArrayList<String>(); // Aqui se guardan las palabras individualmente
+	 ArrayList<String> listadoEtiquetas = new ArrayList<String>(); //Aquí se guardan las etiquetas sin repetir
+	 ArrayList<Integer> listadoFrecEtiquetas = new ArrayList<Integer>(); //Frecuencia de cada etiqueta
 	 ArrayList<TablaFrecuencias> tabla = new ArrayList<TablaFrecuencias>();
+	 ArrayList<BagOfWords> bagofwords = new ArrayList<BagOfWords>(); 
 	 
 	
 	/**
@@ -25,15 +30,17 @@ public class Entrenamiento
 		LeerTexto(NombreArchivo);
 		DividirPalabras(list);
 		SepararPalabras(palabras);
+		ListaEtiquetas(etiquetas);
 		CrearTablaFrecuencias();
-		
+		FrecuenciaEtiqueta(tabla,listadoEtiquetas);
+		CrearBagOfWords(tabla);
 	}
 	
 	/**
 	 * Metodo que lee el archivo de entrenamiento
 	 */
 	
-	public void LeerTexto(String NombreArchivo) // M�todo para leer el archivo de entrenamiento.
+	public void LeerTexto(String NombreArchivo) // Mï¿½todo para leer el archivo de entrenamiento.
 	{
 		//String texto = "";
 		try
@@ -193,13 +200,77 @@ public class Entrenamiento
 		
 		for(int i = 0; i < oracionSeparada.length; i++)
 		{
-			if(palabraRevisada.equals(oracionSeparada[i]))
+			if(palabraRevisada.equalsIgnoreCase(oracionSeparada[i]))
 			{
 				repetido++;
 			}
 		}
 		
 		return repetido;
+	}
+	
+	private void ListaEtiquetas(ArrayList<String> LEtiquetas)
+	{
+		for(int i = 0; i<LEtiquetas.size(); i++)
+		{
+			if(!listadoEtiquetas.contains((LEtiquetas.get(i))))
+			{
+				listadoEtiquetas.add(LEtiquetas.get(i));
+			}
+		}
+	}
+	
+	private void FrecuenciaEtiqueta(ArrayList<TablaFrecuencias> TablaFrecuencia, ArrayList<String> LEtiquetas)
+	{
+		int contadorPalabra = 0;
+		for(int i = 0; i<LEtiquetas.size(); i++)
+		{
+			String etiqueta = LEtiquetas.get(i);
+			for(int j = 0; j<TablaFrecuencia.size(); j++)
+			{
+				if(etiqueta.equalsIgnoreCase(TablaFrecuencia.get(j).etiqueta()))
+				{
+					contadorPalabra += TablaFrecuencia.get(j).frecuencia();
+				}
+			}
+			listadoFrecEtiquetas.add(contadorPalabra);
+			contadorPalabra = 0;
+		}
+	}
+	
+	private void CrearBagOfWords(ArrayList<TablaFrecuencias> TablaFrecuencia)
+	{
+		int frecuenciaEtiqueta = 0;
+		ArrayList<NodoBOW> listaEtiquetasxPalabra = null;
+		
+		for(int i = 0; i<listadoPalabras.size();i++)
+		{
+			String palabra = listadoPalabras.get(i);
+			listaEtiquetasxPalabra = new ArrayList<NodoBOW>();
+			for(int j = 0; j<listadoEtiquetas.size(); j++)
+			{
+				String etiqueta = listadoEtiquetas.get(j);
+				for(int k = 0; k<TablaFrecuencia.size(); k++)
+				{
+					if(palabra.equalsIgnoreCase(TablaFrecuencia.get(k).palabra()) && etiqueta.equalsIgnoreCase(TablaFrecuencia.get(k).etiqueta()))
+					{
+						frecuenciaEtiqueta += TablaFrecuencia.get(k).frecuencia();
+					}
+				}
+				
+				BigDecimal num = new BigDecimal(frecuenciaEtiqueta + 1);
+				BigDecimal den = new BigDecimal(listadoFrecEtiquetas.get(j) + listadoPalabras.size());
+				BigDecimal prob = new BigDecimal("0.0");
+				prob = num.divide(den,MathContext.DECIMAL128);
+
+				NodoBOW nodo = new NodoBOW(etiqueta,prob.toString());
+				
+				listaEtiquetasxPalabra.add(nodo);
+				frecuenciaEtiqueta = 0;
+			}
+			BagOfWords bow = new BagOfWords(palabra,listaEtiquetasxPalabra);
+			bagofwords.add(bow);
+		}
 	}
 
         
