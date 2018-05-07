@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
-
-
+import java.util.Collections;
 
 
 public class Entrenamiento 
@@ -10,17 +9,23 @@ public class Entrenamiento
 	 * Variables Globales
 	 */
  
-	public ArrayList<String> list = new ArrayList<String>(); // Listado de las lineas del archivo de texto (palabras + etiqueta)
-	public ArrayList<String> palabras = new ArrayList<String>(); // Se guardan palabras de cada oracion (No estan separadas)
-	public ArrayList<String> etiquetas = new ArrayList<String>(); // Se guardan etiquetas de cada oracion.
-	public ArrayList<String> listadoPalabras = new ArrayList<String>(); // Aqui se guardan las palabras individualmente
+	 ArrayList<String> list = new ArrayList<String>(); // Listado de las lineas del archivo de texto (palabras + etiqueta)
+	 ArrayList<String> palabras = new ArrayList<String>(); // Se guardan palabras de cada oracion (No estan separadas)
+	 ArrayList<String> etiquetas = new ArrayList<String>(); // Se guardan etiquetas de cada oracion.
+	 ArrayList<String> listadoPalabras = new ArrayList<String>(); // Aqui se guardan las palabras individualmente
+	 ArrayList<TablaFrecuencias> tabla = new ArrayList<TablaFrecuencias>();
+	 
 	
+	/**
+	 * Constructor de la Clase
+	 * @param NombreArchivo
+	 */
 	public Entrenamiento(String NombreArchivo)
 	{
 		LeerTexto(NombreArchivo);
 		DividirPalabras(list);
 		SepararPalabras(palabras);
-		
+		CrearTablaFrecuencias();
 		
 	}
 	
@@ -71,9 +76,6 @@ public class Entrenamiento
 			palabras.add(palabraEtiqueta[0]); // Se almacena la linea de palabras de la linea completa.
 			etiquetas.add(palabraEtiqueta[1]); //Se almacena la etiqueta de la linea completa.
 		}
-		
-	
-		
 	}
 	
 	
@@ -94,11 +96,64 @@ public class Entrenamiento
 			{
 				if(!listadoPalabras.contains(lineaSeparar[j])) // Se evalua si la palabra se encuentra o no en la lista.
 				{
-					listadoPalabras.add(lineaSeparar[j]);
+					listadoPalabras.add(lineaSeparar[j].toLowerCase());
 				}
 			}
 		}
 		
+	}
+	
+	private void CrearTablaFrecuencias()
+	{
+		String etiqueta;
+		String oracion;
+		String [] fraseCompleta;
+		String [] separarOracion;
+		int frecuenciaPalabra = 0;
+		ArrayList<String> palabrasRevisadas = new ArrayList<String>();
+		
+		for(int i = 0; i < list.size(); i++)
+		{
+			fraseCompleta = list.get(i).split("\\|");
+		
+			oracion = fraseCompleta[0];
+			etiqueta = fraseCompleta[1];
+			
+			separarOracion = oracion.split(" "); // Separa por palabras la oracion
+			
+			for(int j = 0; j < separarOracion.length; j++) // Se recorre el arreglo de las palabras de la frase que se esta revisando
+			{
+			
+				if(!palabrasRevisadas.contains(separarOracion[j]))
+				{
+					frecuenciaPalabra = DeterminarFrecuencia(separarOracion[j], separarOracion);
+					palabrasRevisadas.add(separarOracion[j]);
+					tabla.add(new TablaFrecuencias(separarOracion[j], etiqueta, i + 1, frecuenciaPalabra));
+					frecuenciaPalabra = 0;
+				}
+			
+				
+			}
+			
+			palabrasRevisadas.clear();
+		}
+	}
+	
+	
+	private int DeterminarFrecuencia(String palabraRevisada,String [] oracionSeparada)
+	{
+		int repetido = 0;
+		
+		
+		for(int i = 0; i < oracionSeparada.length; i++)
+		{
+			if(palabraRevisada.equals(oracionSeparada[i]))
+			{
+				repetido++;
+			}
+		}
+		
+		return repetido;
 	}
 	
 }

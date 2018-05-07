@@ -71,9 +71,9 @@ public class Inicio
 				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				if(fc.showOpenDialog(btnEntrenar) == JFileChooser.APPROVE_OPTION)
 				{
-					
 				}
 				NombreArchivo = fc.getSelectedFile().getAbsolutePath();
+				
 				
 				entrenar = new Entrenamiento(NombreArchivo); // Se inicializa la clase entrenar.
 				
