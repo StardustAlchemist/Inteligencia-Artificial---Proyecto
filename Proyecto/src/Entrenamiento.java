@@ -33,12 +33,12 @@ public class Entrenamiento
 	 * Metodo que lee el archivo de entrenamiento
 	 */
 	
-	public void LeerTexto(String NombreArchivo) // Método para leer el archivo de entrenamiento.
+	public void LeerTexto(String NombreArchivo) // Mï¿½todo para leer el archivo de entrenamiento.
 	{
-		String texto = "";
+		//String texto = "";
 		try
 		{
-			BufferedReader bf = new BufferedReader(new FileReader(NombreArchivo));
+			BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(NombreArchivo), "UTF-8"));
 			String temp = "";
 			String bfRead;
 			
@@ -73,8 +73,8 @@ public class Entrenamiento
 			linea = listadoLineas.get(i);
 			palabraEtiqueta = linea.split("\\|");
 			
-			palabras.add(palabraEtiqueta[0]); // Se almacena la linea de palabras de la linea completa.
-			etiquetas.add(palabraEtiqueta[1]); //Se almacena la etiqueta de la linea completa.
+			palabras.add(StringUtils.stripAccents(palabraEtiqueta[0]).trim()); // Se almacena la linea de palabras de la linea completa.
+			etiquetas.add(palabraEtiqueta[1].trim()); //Se almacena la etiqueta de la linea completa.
 		}
 	}
 	
@@ -87,20 +87,36 @@ public class Entrenamiento
 	private void SepararPalabras(ArrayList<String> lineaDePalabras)
 	{
 		String [] lineaSeparar;
-		
 		for(int i = 0; i < lineaDePalabras.size(); i++)
 		{
-			lineaSeparar = lineaDePalabras.get(i).split(" ");
+			lineaSeparar = lineaDePalabras.get(i).split("\\s");
 			
 			for(int j = 0; j < lineaSeparar.length; j++)
 			{
-				if(!listadoPalabras.contains(lineaSeparar[j])) // Se evalua si la palabra se encuentra o no en la lista.
+				if(lineaSeparar[j].length() != 0 && !lineaSeparar[j].matches("\\W"))
 				{
-					listadoPalabras.add(lineaSeparar[j].toLowerCase());
+                                    if(lineaSeparar[j].substring(lineaSeparar[j].length()-1).matches("\\W"))
+                                    {
+                                      lineaSeparar[j] = lineaSeparar[j].substring(0, lineaSeparar[j].length()-1);
+                                    }
+                                    if(!IgnoreCase(listadoPalabras,lineaSeparar[j])) // Se evalua si la palabra se encuentra o no en la lista.
+                                    {
+					listadoPalabras.add(lineaSeparar[j]);
+                               	    }
 				}
 			}
 		}
 		
+	}
+	
+	private boolean IgnoreCase(ArrayList<String> lineaDePalabras, String palabra)
+	{
+		for(int i = 0; i<lineaDePalabras.size(); i++)
+		{
+			if(lineaDePalabras.get(i).equalsIgnoreCase(palabra))
+				return true;
+		}
+		return false;
 	}
 	
 	private void CrearTablaFrecuencias()
