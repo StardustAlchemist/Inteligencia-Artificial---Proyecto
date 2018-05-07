@@ -12,6 +12,7 @@ public class Inicio
 	private JFrame frame;
 	String texto = "";
 	String NombreArchivo = "";
+	private Database database = new Database();
 	
 	
 	Entrenamiento entrenar; // Instancia de la clase Entrenamiento
@@ -43,6 +44,20 @@ public class Inicio
 	 */
 	public Inicio()
 	{
+		try {
+			database.eliminar_tablas();
+			database.crear_tablas();
+			database.insertar_palabra("hola", "positivo");
+			database.insertar_palabra("hola", "positivo");
+			database.insertar_palabra("hola", "positivo");
+			database.insertar_palabra("hola", "positivo");
+			
+			database.mostrar_tabla();
+			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		initialize();
 	}
 
