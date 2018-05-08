@@ -13,4 +13,24 @@ public class TablaFrecuencias
 		NoFrase = noFrase;
 		Frecuencia = frecuencia;
 	}
+	
+	public String palabra()
+	{
+		return Palabra;
+	}
+	
+	public String etiqueta()
+	{
+		return Etiqueta;
+	}
+	
+	public int nofrase()
+	{
+		return NoFrase;
+	}
+	
+	public int frecuencia()
+	{
+		return Frecuencia;
+	}
 }
