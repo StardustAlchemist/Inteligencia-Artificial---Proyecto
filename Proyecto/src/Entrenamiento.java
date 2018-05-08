@@ -17,6 +17,8 @@ public class Entrenamiento
 	 ArrayList<String> listadoPalabras = new ArrayList<String>(); // Aqui se guardan las palabras individualmente
 	 ArrayList<String> listadoEtiquetas = new ArrayList<String>(); //Aquí se guardan las etiquetas sin repetir
 	 ArrayList<Integer> listadoFrecEtiquetas = new ArrayList<Integer>(); //Frecuencia de cada etiqueta
+	 ArrayList<String> probabilidadesEtiquetas = new ArrayList<String>(); //Probabilidades individuales de las etiquetas
+	 ArrayList<Integer> frecuenciaFraseEtiqueta = new ArrayList<Integer>(); //Lista para guardar las frecuencias de cada etiqueda en las frases
 	 ArrayList<TablaFrecuencias> tabla = new ArrayList<TablaFrecuencias>();
 	 ArrayList<BagOfWords> bagofwords = new ArrayList<BagOfWords>(); 
 	 
@@ -34,6 +36,9 @@ public class Entrenamiento
 		CrearTablaFrecuencias();
 		FrecuenciaEtiqueta(tabla,listadoEtiquetas);
 		CrearBagOfWords(tabla);
+		ObtenerProbabilidadesEtiquetas();
+		int k = 0;
+		k  = 1;
 	}
 	
 	/**
@@ -222,7 +227,9 @@ public class Entrenamiento
 	
 	private void FrecuenciaEtiqueta(ArrayList<TablaFrecuencias> TablaFrecuencia, ArrayList<String> LEtiquetas)
 	{
+		ArrayList<Integer> NoFrases = new ArrayList<Integer>();
 		int contadorPalabra = 0;
+		int NoFrasesEtiqueta = 0;
 		for(int i = 0; i<LEtiquetas.size(); i++)
 		{
 			String etiqueta = LEtiquetas.get(i);
@@ -232,9 +239,16 @@ public class Entrenamiento
 				{
 					contadorPalabra += TablaFrecuencia.get(j).frecuencia();
 				}
+				if(!NoFrases.contains(TablaFrecuencia.get(j).nofrase()) && etiqueta.equalsIgnoreCase(TablaFrecuencia.get(j).etiqueta()))
+				{
+					NoFrasesEtiqueta++;
+					NoFrases.add(TablaFrecuencia.get(j).nofrase());
+				}
 			}
 			listadoFrecEtiquetas.add(contadorPalabra);
 			contadorPalabra = 0;
+			frecuenciaFraseEtiqueta.add(NoFrasesEtiqueta);
+			NoFrasesEtiqueta = 0;
 		}
 	}
 	
@@ -271,9 +285,33 @@ public class Entrenamiento
 			BagOfWords bow = new BagOfWords(palabra,listaEtiquetasxPalabra);
 			bagofwords.add(bow);
 		}
+		
+		
+	}
+	
+	private void ObtenerProbabilidadesEtiquetas()
+	{
+		int NoFrases = etiquetas.size();
+		for(int i = 0; i<frecuenciaFraseEtiqueta.size(); i++)
+		{
+			BigDecimal num = new BigDecimal(frecuenciaFraseEtiqueta.get(i));
+			BigDecimal den = new BigDecimal(NoFrases);
+			BigDecimal prob = new BigDecimal(0.0);
+			prob = num.divide(den, MathContext.DECIMAL128);
+			probabilidadesEtiquetas.add(prob.toString());
+		}
+		
 	}
 
-        
+	public ArrayList<BagOfWords> TablaBOW()
+	{
+		return bagofwords;
+	}
+	
+	public ArrayList<String> ProbabilidadesEtiquetas()
+	{
+		return probabilidadesEtiquetas;
+	}
         /**
          * if(lineaSeparar[j].length() != 0 && !lineaSeparar[j].matches("\\W"))
 				{
