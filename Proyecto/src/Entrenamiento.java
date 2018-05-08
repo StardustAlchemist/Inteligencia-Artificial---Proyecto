@@ -25,6 +25,7 @@ public class Entrenamiento
 	 ArrayList<TablaFrecuencias> tabla = new ArrayList<TablaFrecuencias>();
 	 ArrayList<BagOfWords> bagofwords = new ArrayList<BagOfWords>(); 
 	 
+	 
 	
 	/**
 	 * Constructor de la Clase
@@ -33,6 +34,29 @@ public class Entrenamiento
 	public Entrenamiento(String NombreArchivo)
 	{
 		LeerTexto(NombreArchivo);
+		DividirPalabras(list);
+		SepararPalabras(palabras);
+		ListaEtiquetas(etiquetas);
+		CrearTablaFrecuencias();
+		FrecuenciaEtiqueta(tabla,listadoEtiquetas);
+		CrearBagOfWords(tabla);
+		ObtenerProbabilidadesEtiquetas();
+		int k = 0;
+		k  = 1;
+	}
+	
+	public void recalcular(String frase, String etiqueta) {
+		list.add(frase+" | "+etiqueta);
+		palabras.clear();
+		etiquetas.clear();
+		listadoPalabras.clear();
+		listadoEtiquetas.clear();
+		listadoFrecEtiquetas.clear();
+		probabilidadesEtiquetas.clear();
+		frecuenciaFraseEtiqueta.clear();
+		tabla.clear();
+		bagofwords.clear();
+		
 		DividirPalabras(list);
 		SepararPalabras(palabras);
 		ListaEtiquetas(etiquetas);
@@ -54,19 +78,15 @@ public class Entrenamiento
 		try
 		{
 			//BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(NombreArchivo), "ISO-8859-1"));
-                        BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(NombreArchivo), "UTF-8"));
+            BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(NombreArchivo), "UTF-8"));
 
-			String temp = "";
 			String bfRead;
 			
 			while((bfRead = bf.readLine()) != null)
 			{
 				list.add(bfRead); // Almacena en la lista todas las lineas que va leyendo.
 			}
-			
 			bf.close(); // Cierra el Archivo, esto siempre se debe de hacer al finalizar de leerlo. 
-			
-			
 		}
 		catch(Exception e)
 		{
@@ -90,7 +110,7 @@ public class Entrenamiento
 			linea = listadoLineas.get(i);
 			palabraEtiqueta = linea.split("\\|");
 			
-			palabras.add(StringUtils.stripAccents(palabraEtiqueta[0]).trim()); // Se almacena la linea de palabras de la linea completa.
+			palabras.add(StringUtils.lowerCase(StringUtils.stripAccents(palabraEtiqueta[0]).trim())); // Se almacena la linea de palabras de la linea completa.
 			etiquetas.add(palabraEtiqueta[1].trim()); //Se almacena la etiqueta de la linea completa.
 		}
 	}
@@ -113,22 +133,22 @@ public class Entrenamiento
 			{
 				if(lineaSeparar[j].length() != 0 && !lineaSeparar[j].matches("\\W"))
 				{
-                                    if(lineaSeparar[j].substring(lineaSeparar[j].length()-1).matches("\\W"))
-                                    {
-                                      lineaSeparar[j] = lineaSeparar[j].substring(0, lineaSeparar[j].length()-1);
-                                    }
-                                    if(!IgnoreCase(listadoPalabras,lineaSeparar[j])) // Se evalua si la palabra se encuentra o no en la lista.
-                                    {
-                                        String prueba = lineaSeparar[j].trim();
-                                        
-                                        if(listadoPalabras.contains(prueba))
-                                        {
-                                        }
-                                        else
-                                        {
-                                           listadoPalabras.add(prueba);
-                                        }
-                               	    }
+                    if(lineaSeparar[j].substring(lineaSeparar[j].length()-1).matches("\\W"))
+                    {
+                      lineaSeparar[j] = lineaSeparar[j].substring(0, lineaSeparar[j].length()-1);
+                    }
+                    if(!IgnoreCase(listadoPalabras,lineaSeparar[j])) // Se evalua si la palabra se encuentra o no en la lista.
+                    {
+                        String prueba = lineaSeparar[j].trim();
+                        
+                        if(listadoPalabras.contains(prueba))
+                        {
+                        }
+                        else
+                        {
+                           listadoPalabras.add(prueba);
+                        }
+               	    }
 				}
 			}
 		}
@@ -170,33 +190,24 @@ public class Entrenamiento
                         
 			for(int j = 0; j < separarOracion.length; j++) // Se recorre el arreglo de las palabras de la frase que se esta revisando
 			{
-                            //-------------------------
-                            if(separarOracion[j].length() != 0 && !separarOracion[j].matches("\\W"))
+	            //-------------------------
+	            if(separarOracion[j].length() != 0 && !separarOracion[j].matches("\\W"))
 				{
-                                    if(separarOracion[j].substring(separarOracion[j].length()-1).matches("\\W"))
-                                    {
-                                      separarOracion[j] = separarOracion[j].substring(0, separarOracion[j].length()-1);
-                                    }
-                                    
-                                   
-                                        
-                                        if(!palabrasRevisadas.contains(separarOracion[j]))
-                                        {
-                                            frecuenciaPalabra = DeterminarFrecuencia(separarOracion[j], separarOracion);
-                                            palabrasRevisadas.add(separarOracion[j]);
-                                            tabla.add(new TablaFrecuencias(separarOracion[j].trim(), etiqueta.trim(), i + 1, frecuenciaPalabra));
-                                            frecuenciaPalabra = 0;
-                                        }
-                               	    
-                                }
-                            
-                            
-
-                            
+                    if(separarOracion[j].substring(separarOracion[j].length()-1).matches("\\W"))
+                    {
+                      separarOracion[j] = separarOracion[j].substring(0, separarOracion[j].length()-1);
+                    }
+                    
+                    if(!IgnoreCase(palabrasRevisadas,separarOracion[j]))
+                    {
+                        frecuenciaPalabra = DeterminarFrecuencia(separarOracion[j], separarOracion);
+                        palabrasRevisadas.add(separarOracion[j]);
+                        tabla.add(new TablaFrecuencias(separarOracion[j].trim(), etiqueta.trim(), i + 1, frecuenciaPalabra));
+                        frecuenciaPalabra = 0;
+                    }   
+                }
 			}
-			
-                         palabrasRevisadas.clear();
-
+			palabrasRevisadas.clear();
 		}
 	}
 	
@@ -204,8 +215,6 @@ public class Entrenamiento
 	private int DeterminarFrecuencia(String palabraRevisada,String [] oracionSeparada)
 	{
 		int repetido = 0;
-		
-		
 		for(int i = 0; i < oracionSeparada.length; i++)
 		{
 			if(palabraRevisada.equalsIgnoreCase(oracionSeparada[i]))
@@ -213,7 +222,6 @@ public class Entrenamiento
 				repetido++;
 			}
 		}
-		
 		return repetido;
 	}
 	
@@ -288,8 +296,6 @@ public class Entrenamiento
 			BagOfWords bow = new BagOfWords(palabra,listaEtiquetasxPalabra);
 			bagofwords.add(bow);
 		}
-		
-		
 	}
 	
 	private void ObtenerProbabilidadesEtiquetas()
@@ -309,12 +315,12 @@ public class Entrenamiento
 	
 	//----------------------------------------SEGUNDA FASE---------------------------------
 	
-	public void Validar(String frase)
+	public String Validar(String frase)
 	{
-		SepararFrase(frase);
+		return SepararFrase(frase);
 	}
 	
-	private void SepararFrase(String frase)
+	private String SepararFrase(String frase)
 	{
 		ArrayList<String> nuevaPalabra = new ArrayList<String>();
 		boolean palabraNueva = false;
@@ -335,12 +341,10 @@ public class Entrenamiento
 				}
 			}         
 		}
-		CalcularEtiqueta(palabraNueva, nuevaPalabra, palabras);
-		int k = 0;
-		k = 1;
+		return CalcularEtiqueta(palabraNueva, nuevaPalabra, palabras);
 	}
 	
-	private void CalcularEtiqueta(boolean palabraNueva, ArrayList<String> nuevaPalabra, String[] palabras)
+	private String CalcularEtiqueta(boolean palabraNueva, ArrayList<String> nuevaPalabra, String[] palabras)
 	{
 		ArrayList<ArrayList<String>> listaEtiquetasProb = new ArrayList<ArrayList<String>>();
 		ArrayList<String> probabilidadesEtiqueta;
@@ -410,6 +414,7 @@ public class Entrenamiento
 				int index = resultados.indexOf(Collections.max(resultados));
 				String etiquetaGanadora = listadoEtiquetas.get(index);
 				JOptionPane.showMessageDialog(null, etiquetaGanadora);
+				return etiquetaGanadora;
 		}
 		else
 		{
@@ -423,7 +428,7 @@ public class Entrenamiento
 			int index = probabilidadesEtiquetas.indexOf(Collections.max(probabilidades));
 			String etiquetaGanadora = listadoEtiquetas.get(index);
 			JOptionPane.showMessageDialog(null, etiquetaGanadora);
-			
+			return etiquetaGanadora;
 		}
 		
 	}

@@ -1,6 +1,7 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import javax.swing.JButton;
@@ -47,24 +48,6 @@ public class Inicio
 	 */
 	public Inicio()
 	{
-		/**
-		 * 
-		 
-		try {
-			//database.eliminar_tablas();
-			//database.crear_tablas();
-			//database.insertar_palabra("hola", "positivo");
-			//database.insertar_palabra("hola", "positivo");
-			//database.insertar_palabra("hola", "positivo");
-			//database.insertar_palabra("hola", "positivo");
-			
-			//database.mostrar_tabla();
-			
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 		initialize();
 	}
 
@@ -121,7 +104,12 @@ public class Inicio
 					 * Codigo para validar la frase
 					 */
 					String frase = txtfieldFrase.getText();
-					entrenar.Validar(frase);
+					if(frase.isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Favor ingrese una frase");
+					}else {
+						String nueva_etiqueta = entrenar.Validar(frase);
+						entrenar.recalcular(frase, nueva_etiqueta);
+					}
 				}
 			});
 			btnValidar.setBounds(300, 110, 89, 23);
