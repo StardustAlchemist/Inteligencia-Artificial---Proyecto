@@ -1,6 +1,8 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JTextField;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -78,6 +80,7 @@ public class Inicio
 		
 		final JButton btnEntrenar = new JButton("Entrenar");
 		
+		
 		btnEntrenar.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e)
@@ -91,19 +94,38 @@ public class Inicio
 				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				if(fc.showOpenDialog(btnEntrenar) == JFileChooser.APPROVE_OPTION)
 				{
+					NombreArchivo = fc.getSelectedFile().getAbsolutePath();
+					entrenar = new Entrenamiento(NombreArchivo); // Se inicializa la clase entrenar.
 				}
-				NombreArchivo = fc.getSelectedFile().getAbsolutePath();
-				
-				
-				entrenar = new Entrenamiento(NombreArchivo); // Se inicializa la clase entrenar.
-				
-				
-			
-				
 				
 			}
 		});
-		btnEntrenar.setBounds(1+69, 110, 89, 23);
+		btnEntrenar.setBounds(50, 110, 89, 23);
 		frame.getContentPane().add(btnEntrenar);
+		
+		 JTextField txtfieldFrase = new JTextField();
+		 txtfieldFrase.setBounds(100, 15, 250, 21);
+		 txtfieldFrase.setText("");
+	     txtfieldFrase.setEditable(true);
+	     txtfieldFrase.setHorizontalAlignment(JTextField.LEFT); 
+	     frame.getContentPane().add(txtfieldFrase);
+		
+	     final JButton btnValidar = new JButton("Validar");
+			
+			
+			btnValidar.addActionListener(new ActionListener() 
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					/**
+					 * Codigo para validar la frase
+					 */
+					
+					
+				}
+			});
+			btnValidar.setBounds(300, 110, 89, 23);
+			frame.getContentPane().add(btnValidar);
+	     
 	}
 }
