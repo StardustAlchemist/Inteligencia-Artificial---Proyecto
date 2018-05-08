@@ -120,8 +120,8 @@ public class Inicio
 					/**
 					 * Codigo para validar la frase
 					 */
-					
-					
+					String frase = txtfieldFrase.getText();
+					entrenar.Validar(frase);
 				}
 			});
 			btnValidar.setBounds(300, 110, 89, 23);
