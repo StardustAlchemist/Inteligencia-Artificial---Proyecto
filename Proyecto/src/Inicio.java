@@ -86,7 +86,7 @@ public class Inicio
 		btnEntrenar.setBounds(50, 110, 89, 23);
 		frame.getContentPane().add(btnEntrenar);
 		
-		 JTextField txtfieldFrase = new JTextField();
+		 final JTextField txtfieldFrase = new JTextField();
 		 txtfieldFrase.setBounds(100, 15, 250, 21);
 		 txtfieldFrase.setText("");
 	     txtfieldFrase.setEditable(true);
