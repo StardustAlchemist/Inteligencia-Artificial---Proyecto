@@ -24,9 +24,7 @@ public class Entrenamiento
 	 ArrayList<Integer> frecuenciaFraseEtiqueta = new ArrayList<Integer>(); //Lista para guardar las frecuencias de cada etiqueda en las frases
 	 ArrayList<TablaFrecuencias> tabla = new ArrayList<TablaFrecuencias>();
 	 ArrayList<BagOfWords> bagofwords = new ArrayList<BagOfWords>(); 
-	 
-	 
-	
+
 	/**
 	 * Constructor de la Clase
 	 * @param NombreArchivo
@@ -84,9 +82,23 @@ public class Entrenamiento
 			
 			while((bfRead = bf.readLine()) != null)
 			{
-				list.add(bfRead); // Almacena en la lista todas las lineas que va leyendo.
+				if(!bfRead.isEmpty()) {
+					list.add(bfRead); // Almacena en la lista todas las lineas que va leyendo.
+				}
 			}
 			bf.close(); // Cierra el Archivo, esto siempre se debe de hacer al finalizar de leerlo. 
+			
+			//quitar los caracteres al inicio
+			char caracteres[] = list.get(0).toCharArray();
+			for(int i = 0; i<caracteres.length; i++){
+				String temp = ""+caracteres[i];
+				if(temp.matches("\\w")) {
+					break;
+				}else {
+					caracteres[i]=' ';
+				}
+			}
+			list.set(0,new String(caracteres));
 		}
 		catch(Exception e)
 		{
