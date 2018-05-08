@@ -303,31 +303,40 @@ public class Entrenamiento
 		
 	}
 
-	public ArrayList<BagOfWords> TablaBOW()
+	
+	//----------------------------------------SEGUNDA FASE---------------------------------
+	
+	public void Validar(String frase)
 	{
-		return bagofwords;
+		SepararFrase(frase);
 	}
 	
-	public ArrayList<String> ProbabilidadesEtiquetas()
+	private void SepararFrase(String frase)
 	{
-		return probabilidadesEtiquetas;
-	}
-        /**
-         * if(lineaSeparar[j].length() != 0 && !lineaSeparar[j].matches("\\W"))
+		ArrayList<String> nuevaPalabra = new ArrayList<String>();
+		boolean palabraNueva = false;
+		frase = StringUtils.stripAccents(frase);
+		String[] palabras = frase.split("\\s");
+		for(int j = 0; j < palabras.length; j++) // Se recorre el arreglo de las palabras de la frase
+		{
+			if(palabras[j].length() != 0 && !palabras[j].matches("\\W"))
+			{
+				if(palabras[j].substring(palabras[j].length()-1).matches("\\W"))
 				{
-                                    if(lineaSeparar[j].substring(lineaSeparar[j].length()-1).matches("\\W"))
-                                    {
-                                      lineaSeparar[j] = lineaSeparar[j].substring(0, lineaSeparar[j].length()-1);
-                                    }
-                                    * 
-                                    if(!IgnoreCase(listadoPalabras,lineaSeparar[j])) // Se evalua si la palabra se encuentra o no en la lista.
-                                    {
-                                        
-                                       
-                               	    }
-                                }
-
-         */
-        
-        
-}
+					palabras[j] = palabras[j].substring(0, palabras[j].length()-1);
+				}
+				if(!IgnoreCase(listadoPalabras,palabras[j]))
+				{
+					palabraNueva = true;
+					nuevaPalabra.add(palabras[j]);
+				}       	    
+			}         
+		}
+		int k = 0;
+		k = 1;
+	}
+	
+	private void CalcularEtiqueta(boolean palabraNueva, ArrayList<String> nuevaPalabra, String[] palabras)
+	{
+		
+	}
