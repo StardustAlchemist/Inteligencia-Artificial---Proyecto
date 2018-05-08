@@ -10,4 +10,14 @@ public class BagOfWords {
 		palabra = p;
 		ListaEtiquetas = LE;
 	}
+	
+	public String Palabra ()
+	{
+		return palabra;
+	}
+	
+	public ArrayList<NodoBOW> listaEtiquetas()
+	{
+		return ListaEtiquetas;
+	}
 }

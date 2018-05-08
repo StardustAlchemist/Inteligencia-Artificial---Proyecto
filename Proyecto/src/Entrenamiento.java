@@ -3,6 +3,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class Entrenamiento 
@@ -17,7 +20,7 @@ public class Entrenamiento
 	 ArrayList<String> listadoPalabras = new ArrayList<String>(); // Aqui se guardan las palabras individualmente
 	 ArrayList<String> listadoEtiquetas = new ArrayList<String>(); //Aquí se guardan las etiquetas sin repetir
 	 ArrayList<Integer> listadoFrecEtiquetas = new ArrayList<Integer>(); //Frecuencia de cada etiqueta
-	 ArrayList<String> probabilidadesEtiquetas = new ArrayList<String>(); //Probabilidades individuales de las etiquetas
+	 ArrayList<BigDecimal> probabilidadesEtiquetas = new ArrayList<BigDecimal>(); //Probabilidades individuales de las etiquetas
 	 ArrayList<Integer> frecuenciaFraseEtiqueta = new ArrayList<Integer>(); //Lista para guardar las frecuencias de cada etiqueda en las frases
 	 ArrayList<TablaFrecuencias> tabla = new ArrayList<TablaFrecuencias>();
 	 ArrayList<BagOfWords> bagofwords = new ArrayList<BagOfWords>(); 
@@ -298,7 +301,7 @@ public class Entrenamiento
 			BigDecimal den = new BigDecimal(NoFrases);
 			BigDecimal prob = new BigDecimal(0.0);
 			prob = num.divide(den, MathContext.DECIMAL128);
-			probabilidadesEtiquetas.add(prob.toString());
+			probabilidadesEtiquetas.add(prob);
 		}
 		
 	}
@@ -329,15 +332,101 @@ public class Entrenamiento
 				{
 					palabraNueva = true;
 					nuevaPalabra.add(palabras[j]);
-				}       	    
+				}
 			}         
 		}
+		CalcularEtiqueta(palabraNueva, nuevaPalabra, palabras);
 		int k = 0;
 		k = 1;
 	}
 	
 	private void CalcularEtiqueta(boolean palabraNueva, ArrayList<String> nuevaPalabra, String[] palabras)
 	{
+		ArrayList<ArrayList<String>> listaEtiquetasProb = new ArrayList<ArrayList<String>>();
+		ArrayList<String> probabilidadesEtiqueta;
+		ArrayList<ArrayList<String>> LEP = new ArrayList<ArrayList<String>>();
+		ArrayList<String> PE;
+		ArrayList<BigDecimal> resultados = new ArrayList<BigDecimal>();
+		
+		String palabra = "";
+		BigDecimal resultado;
+		BigDecimal valor;
+		BigDecimal probabilidad;
+		
+		if(nuevaPalabra.size() == 0)
+		{
+			
+				for(int i = 0; i<palabras.length; i++)
+				{
+					palabra = palabras[i];
+					//probabilidadesEtiqueta = new ArrayList<String>();
+					
+					for(int j = 0; j<bagofwords.size(); j++)
+					{
+						
+						//etiqueta = listadoEtiquetas.get(j);
+						if(palabra.equalsIgnoreCase(bagofwords.get(j).Palabra()))
+						{
+							probabilidadesEtiqueta = new ArrayList<String>();
+							for(int k = 0; k<bagofwords.get(j).listaEtiquetas().size(); k++)
+							{
+								BigDecimal prob = new BigDecimal(bagofwords.get(j).listaEtiquetas().get(k).Probabilidad());
+								probabilidadesEtiqueta.add(prob.toString());
+							}
+							
+							listaEtiquetasProb.add(probabilidadesEtiqueta);
+
+						}
+						
+						
+					}
+
+				}
+				for(int j = 0; j<listadoEtiquetas.size(); j++)
+				{
+					PE = new ArrayList<String>();
+					for(int i = 0; i<listaEtiquetasProb.size(); i++)
+					  {
+						  PE.add(listaEtiquetasProb.get(i).get(j));
+					  }
+					LEP.add(PE);
+				}
+				
+				for(int i = 0; i<LEP.size(); i++)
+				{
+					resultado = new BigDecimal(1);
+					probabilidad = new BigDecimal(probabilidadesEtiquetas.get(i).toString());
+					for(int j = 0; j<LEP.get(i).size(); j++)
+					{
+						valor = new BigDecimal(LEP.get(i).get(j));
+						resultado = resultado.multiply(valor);
+					}
+					resultado = resultado.multiply(probabilidad);
+					resultados.add(resultado);
+				}
+				
+			
+				
+				int index = resultados.indexOf(Collections.max(resultados));
+				String etiquetaGanadora = listadoEtiquetas.get(index);
+				JOptionPane.showMessageDialog(null, etiquetaGanadora);
+		}
+		else
+		{
+			ArrayList<BigDecimal> probabilidades = new ArrayList<BigDecimal>();
+			BigDecimal prob;
+			for(int i = 0; i<probabilidadesEtiquetas.size(); i++)
+			{
+				prob = new BigDecimal(probabilidadesEtiquetas.get(i).toString());
+				probabilidades.add(prob);
+			}
+			int index = probabilidadesEtiquetas.indexOf(Collections.max(probabilidades));
+			String etiquetaGanadora = listadoEtiquetas.get(index);
+			JOptionPane.showMessageDialog(null, etiquetaGanadora);
+			
+		}
 		
 	}
+	
+	
 }

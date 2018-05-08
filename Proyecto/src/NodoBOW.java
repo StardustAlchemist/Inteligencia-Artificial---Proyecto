@@ -16,4 +16,14 @@ public class NodoBOW {
 		probabilidad = prob;
 	}
 	
+	public String Etiqueta()
+	{
+		return etiqueta;
+	}
+	
+	public String Probabilidad()
+	{
+		return probabilidad;
+	}
+	
 }
