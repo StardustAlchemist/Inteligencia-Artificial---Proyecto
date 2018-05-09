@@ -18,12 +18,14 @@ public class Entrenamiento
 	 ArrayList<String> palabras = new ArrayList<String>(); // Se guardan palabras de cada oracion (No estan separadas)
 	 ArrayList<String> etiquetas = new ArrayList<String>(); // Se guardan etiquetas de cada oracion.
 	 ArrayList<String> listadoPalabras = new ArrayList<String>(); // Aqui se guardan las palabras individualmente
-	 ArrayList<String> listadoEtiquetas = new ArrayList<String>(); //Aquí se guardan las etiquetas sin repetir
+	 ArrayList<String> listadoEtiquetas = new ArrayList<String>(); //AquÃ­ se guardan las etiquetas sin repetir
 	 ArrayList<Integer> listadoFrecEtiquetas = new ArrayList<Integer>(); //Frecuencia de cada etiqueta
 	 ArrayList<BigDecimal> probabilidadesEtiquetas = new ArrayList<BigDecimal>(); //Probabilidades individuales de las etiquetas
 	 ArrayList<Integer> frecuenciaFraseEtiqueta = new ArrayList<Integer>(); //Lista para guardar las frecuencias de cada etiqueda en las frases
+	 ArrayList<int[]> frecEtiquetas = new ArrayList<int[]>();
+	 ArrayList<String[]> bagofwords = new ArrayList<String[]>();
 	 ArrayList<TablaFrecuencias> tabla = new ArrayList<TablaFrecuencias>();
-	 ArrayList<BagOfWords> bagofwords = new ArrayList<BagOfWords>(); 
+	 //ArrayList<BagOfWords> bagofwords = new ArrayList<BagOfWords>(); 
 
 	/**
 	 * Constructor de la Clase
@@ -52,6 +54,7 @@ public class Entrenamiento
 		listadoFrecEtiquetas.clear();
 		probabilidadesEtiquetas.clear();
 		frecuenciaFraseEtiqueta.clear();
+		frecEtiquetas.clear();
 		tabla.clear();
 		bagofwords.clear();
 		
@@ -70,7 +73,7 @@ public class Entrenamiento
 	 * Metodo que lee el archivo de entrenamiento
 	 */
 	
-	public void LeerTexto(String NombreArchivo) // Mï¿½todo para leer el archivo de entrenamiento.
+	public void LeerTexto(String NombreArchivo) // MÃ¯Â¿Â½todo para leer el archivo de entrenamiento.
 	{
 		//String texto = "";
 		try
@@ -251,16 +254,25 @@ public class Entrenamiento
 	private void FrecuenciaEtiqueta(ArrayList<TablaFrecuencias> TablaFrecuencia, ArrayList<String> LEtiquetas)
 	{
 		ArrayList<Integer> NoFrases = new ArrayList<Integer>();
+		//ArrayList<String> palabra = new ArrayList<String>();
+		String palabra = "";
+		int[] frecEtiqueta;
+		
 		int contadorPalabra = 0;
 		int NoFrasesEtiqueta = 0;
 		for(int i = 0; i<LEtiquetas.size(); i++)
 		{
+			frecEtiqueta = new int[listadoPalabras.size()];
 			String etiqueta = LEtiquetas.get(i);
+			
 			for(int j = 0; j<TablaFrecuencia.size(); j++)
 			{
 				if(etiqueta.equalsIgnoreCase(TablaFrecuencia.get(j).etiqueta()))
 				{
 					contadorPalabra += TablaFrecuencia.get(j).frecuencia();
+					palabra = TablaFrecuencia.get(j).palabra();
+					int index = listadoPalabras.indexOf(palabra.toLowerCase());
+					frecEtiqueta[index] += TablaFrecuencia.get(j).frecuencia();
 				}
 				if(!NoFrases.contains(TablaFrecuencia.get(j).nofrase()) && etiqueta.equalsIgnoreCase(TablaFrecuencia.get(j).etiqueta()))
 				{
@@ -268,6 +280,8 @@ public class Entrenamiento
 					NoFrases.add(TablaFrecuencia.get(j).nofrase());
 				}
 			}
+			frecEtiquetas.add(frecEtiqueta);
+			
 			listadoFrecEtiquetas.add(contadorPalabra);
 			contadorPalabra = 0;
 			frecuenciaFraseEtiqueta.add(NoFrasesEtiqueta);
@@ -277,7 +291,21 @@ public class Entrenamiento
 	
 	private void CrearBagOfWords(ArrayList<TablaFrecuencias> TablaFrecuencia)
 	{
-		int frecuenciaEtiqueta = 0;
+		String[] probabilidades;
+		for(int i = 0; i<frecEtiquetas.size(); i++)
+		{
+			probabilidades = new String[listadoPalabras.size()];
+			for(int j = 0; j<frecEtiquetas.get(i).length; j++)
+			{
+				BigDecimal num = new BigDecimal(frecEtiquetas.get(i)[j] + 1);
+				BigDecimal den = new BigDecimal(listadoFrecEtiquetas.get(i) + listadoPalabras.size());
+				BigDecimal prob = new BigDecimal("0.0");
+				prob = num.divide(den,MathContext.DECIMAL128);
+				probabilidades[j] = prob.toString();
+			}
+			bagofwords.add(probabilidades);
+		}
+		/*int frecuenciaEtiqueta = 0;
 		ArrayList<NodoBOW> listaEtiquetasxPalabra = null;
 		
 		for(int i = 0; i<listadoPalabras.size();i++)
@@ -307,7 +335,7 @@ public class Entrenamiento
 			}
 			BagOfWords bow = new BagOfWords(palabra,listaEtiquetasxPalabra);
 			bagofwords.add(bow);
-		}
+		}*/
 	}
 	
 	private void ObtenerProbabilidadesEtiquetas()
@@ -358,21 +386,51 @@ public class Entrenamiento
 	
 	private String CalcularEtiqueta(boolean palabraNueva, ArrayList<String> nuevaPalabra, String[] palabras)
 	{
-		ArrayList<ArrayList<String>> listaEtiquetasProb = new ArrayList<ArrayList<String>>();
-		ArrayList<String> probabilidadesEtiqueta;
-		ArrayList<ArrayList<String>> LEP = new ArrayList<ArrayList<String>>();
-		ArrayList<String> PE;
+		boolean vinoPalabraVieja = false;
 		ArrayList<BigDecimal> resultados = new ArrayList<BigDecimal>();
-		
-		String palabra = "";
+		ArrayList<Integer> posicionesProb = new ArrayList<Integer>();
 		BigDecimal resultado;
 		BigDecimal valor;
 		BigDecimal probabilidad;
 		
-		if(nuevaPalabra.size() == 0)
+		
+		for(int i = 0; i<palabras.length; i++)
 		{
+			if(listadoPalabras.contains(palabras[i]))
+			{
+				vinoPalabraVieja = true;
+			}
+		}
+		
+		if(vinoPalabraVieja)
+		{
+			for(int i = 0; i<palabras.length; i++)
+			{
+				if(listadoPalabras.indexOf(palabras[i].toLowerCase()) != -1)
+				{
+					posicionesProb.add(listadoPalabras.indexOf(palabras[i].toLowerCase()));
+				}
+			}
 			
-				for(int i = 0; i<palabras.length; i++)
+			for(int i = 0; i<bagofwords.size(); i++)
+			{
+				resultado = new BigDecimal(1);
+				probabilidad = new BigDecimal(probabilidadesEtiquetas.get(i).toString());
+				for(int j = 0; j<posicionesProb.size(); j++)
+				{
+					valor = new BigDecimal(bagofwords.get(i)[posicionesProb.get(j)]);
+					resultado = resultado.multiply(valor);
+				}
+				resultado = resultado.multiply(probabilidad);
+				resultados.add(resultado);
+			}
+
+			int index = resultados.indexOf(Collections.max(resultados));
+			String etiquetaGanadora = listadoEtiquetas.get(index);
+			JOptionPane.showMessageDialog(null, etiquetaGanadora);
+			return etiquetaGanadora;
+			
+				/*for(int i = 0; i<palabras.length; i++)
 				{
 					palabra = palabras[i];
 					//probabilidadesEtiqueta = new ArrayList<String>();
@@ -426,7 +484,7 @@ public class Entrenamiento
 				int index = resultados.indexOf(Collections.max(resultados));
 				String etiquetaGanadora = listadoEtiquetas.get(index);
 				JOptionPane.showMessageDialog(null, etiquetaGanadora);
-				return etiquetaGanadora;
+				return etiquetaGanadora;*/
 		}
 		else
 		{
@@ -444,6 +502,5 @@ public class Entrenamiento
 		}
 		
 	}
-	
 	
 }
