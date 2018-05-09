@@ -41,8 +41,7 @@ public class Entrenamiento
 		FrecuenciaEtiqueta(tabla,listadoEtiquetas);
 		CrearBagOfWords(tabla);
 		ObtenerProbabilidadesEtiquetas();
-		int k = 0;
-		k  = 1;
+		
 	}
 	
 	public void recalcular(String frase, String etiqueta) {
@@ -65,8 +64,6 @@ public class Entrenamiento
 		FrecuenciaEtiqueta(tabla,listadoEtiquetas);
 		CrearBagOfWords(tabla);
 		ObtenerProbabilidadesEtiquetas();
-		int k = 0;
-		k  = 1;
 	}
 	
 	/**
@@ -78,14 +75,15 @@ public class Entrenamiento
 		//String texto = "";
 		try
 		{
+			
 			//BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(NombreArchivo), "ISO-8859-1"));
             BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(NombreArchivo), "UTF-8"));
 
 			String bfRead;
-			
 			while((bfRead = bf.readLine()) != null)
 			{
-				if(!bfRead.isEmpty()) {
+				
+				if(!bfRead.isEmpty() && bfRead.contains("|")) {
 					list.add(bfRead); // Almacena en la lista todas las lineas que va leyendo.
 				}
 			}
@@ -148,10 +146,14 @@ public class Entrenamiento
 			{
 				if(lineaSeparar[j].length() != 0 && !lineaSeparar[j].matches("\\W"))
 				{
-                    if(lineaSeparar[j].substring(lineaSeparar[j].length()-1).matches("\\W"))
+					if(lineaSeparar[j].matches("\\W*\\w+\\W*"))
+					{
+						lineaSeparar[j] = lineaSeparar[j].replaceAll("\\W", " ").trim();
+					}
+                    /*if(lineaSeparar[j].substring(lineaSeparar[j].length()-1).matches("\\W"))
                     {
                       lineaSeparar[j] = lineaSeparar[j].substring(0, lineaSeparar[j].length()-1);
-                    }
+                    }*/
                     if(!IgnoreCase(listadoPalabras,lineaSeparar[j])) // Se evalua si la palabra se encuentra o no en la lista.
                     {
                         String prueba = lineaSeparar[j].trim();
@@ -208,10 +210,10 @@ public class Entrenamiento
 	            //-------------------------
 	            if(separarOracion[j].length() != 0 && !separarOracion[j].matches("\\W"))
 				{
-                    if(separarOracion[j].substring(separarOracion[j].length()-1).matches("\\W"))
-                    {
-                      separarOracion[j] = separarOracion[j].substring(0, separarOracion[j].length()-1);
-                    }
+	            	if(separarOracion[j].matches("\\W*\\w+\\W*"))
+					{
+						separarOracion[j] = separarOracion[j].replaceAll("\\W", " ").trim();
+					}
                     
                     if(!IgnoreCase(palabrasRevisadas,separarOracion[j]))
                     {
@@ -370,9 +372,9 @@ public class Entrenamiento
 		{
 			if(palabras[j].length() != 0 && !palabras[j].matches("\\W"))
 			{
-				if(palabras[j].substring(palabras[j].length()-1).matches("\\W"))
+				if(palabras[j].matches("\\W*\\w+\\W*"))
 				{
-					palabras[j] = palabras[j].substring(0, palabras[j].length()-1);
+					palabras[j] = palabras[j].replaceAll("\\W", " ").trim();
 				}
 				if(!IgnoreCase(listadoPalabras,palabras[j]))
 				{
