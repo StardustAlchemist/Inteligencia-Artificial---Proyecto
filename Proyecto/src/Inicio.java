@@ -15,6 +15,7 @@ public class Inicio
 	private JFrame frame;
 	String texto = "";
 	String NombreArchivo = "";
+	boolean entrenamiento = false;
 	
 	//private Database database = new Database();
 	
@@ -79,6 +80,7 @@ public class Inicio
 				{
 					NombreArchivo = fc.getSelectedFile().getAbsolutePath();
 					entrenar = new Entrenamiento(NombreArchivo); // Se inicializa la clase entrenar.
+					entrenamiento = true;
 				}
 				
 			}
@@ -103,13 +105,21 @@ public class Inicio
 					/**
 					 * Codigo para validar la frase
 					 */
-					String frase = txtfieldFrase.getText();
-					if(frase.isEmpty()) {
-						JOptionPane.showMessageDialog(null, "Favor ingrese una frase");
-					}else {
-						String nueva_etiqueta = entrenar.Validar(frase);
-						entrenar.recalcular(frase, nueva_etiqueta);
+					if(!entrenamiento)
+					{
+						JOptionPane.showMessageDialog(null, "Ingrese un archivo de entranamiento", "Error", JOptionPane.ERROR_MESSAGE);
 					}
+					else
+					{
+						String frase = txtfieldFrase.getText();
+						if(frase.isEmpty()) {
+							JOptionPane.showMessageDialog(null, "Ingrese una frase", "Error", JOptionPane.ERROR_MESSAGE);
+						}else {
+							String nueva_etiqueta = entrenar.Validar(frase);
+							entrenar.recalcular(frase, nueva_etiqueta);
+						}
+					}
+					
 				}
 			});
 			btnValidar.setBounds(300, 110, 89, 23);
